@@ -2836,16 +2836,21 @@
           Acesse o jardim para explorar, comentar e interagir!
         </p>
 
-        <div id="user-step-email">
-          <div class="form-group">
-            <label for="user-email-input">Seu Gmail</label>
+       <div id="user-step-name">
+  <div class="form-group">
+    <label for="user-name-input">Como quer ser chamado?</label>
+    <input
+      type="text"
+      id="user-name-input"
+      placeholder="Seu nome"
+      autocomplete="nickname"
+    />
+  </div>
 
-            <input
-              type="email"
-              id="user-email-input"
-              placeholder="exemplo@gmail.com"
-              autocomplete="email"
-            />
+  <button class="btn btn-primary" onclick="userRegister()">
+    Entrar no Jardim 🌿
+  </button>
+</div>
 
             <span class="form-error" id="user-email-err"></span>
           </div>
@@ -2921,11 +2926,8 @@
         </div>
 
         <div class="form-group">
-          <label for="prof-pass-input">Senha de Acesso</label>
-
-          <input
-            type="password"
-            id="prof-pass-input"
+  <label>Como quer ser chamado?</label>
+  <input type="text" id="prof-name-input" placeholder="Professor">
             placeholder="••••••••••"
           />
 
@@ -3166,8 +3168,6 @@
 
       }
 
-      function userCheckEmail() {
-
       clearModalErrors();
 
       const emailEl = document.getElementById('user-email-input');
@@ -3202,7 +3202,7 @@
 
       document.getElementById('user-name-input').focus();
 
-      }}
+      }
 
       function userBackToEmail() {
 
@@ -3214,87 +3214,65 @@
 
       }
 
-      function userRegister() {
+    function userRegister() {
 
-      clearModalErrors();
+  clearModalErrors();
 
-      const email = document.getElementById('user-email-input').value.trim().toLowerCase();
+  const name = document.getElementById('user-name-input').value.trim();
 
-      const name = document.getElementById('user-name-input').value.trim();
+  if (!name) {
+    showError('user-name-err', 'Por favor, insira seu nome.');
+    return;
+  }
 
-      if (!name) { showError('user-name-err', 'Por favor, insira seu nome.'); return; }
+  if (name.length < 2) {
+    showError('user-name-err', 'Nome muito curto.');
+    return;
+  }
 
-      if (name.length < 2) { showError('user-name-err', 'Nome muito curto.'); return; }
+  currentUser = {
+    name,
+    role: 'user'
+  };
 
-      const users = getUsers();
+  saveSession(currentUser);
 
-      if (users[email]) {
+  closeModal('modal-user');
 
-      showError('user-name-err', 'Este email já está cadastrado. Recarregue a página.');
+  enterApp();
 
-      return;}
-
-      users[email] = { name, registeredAt: Date.now() };
-
-      setUsers(users);
-
-      currentUser = { email, name, role: 'user' };
-
-      saveSession(currentUser);
-
-      closeModal('modal-user');
-
-      enterApp();
-
-      toast('🌸 Bem-vindo ao jardim, ' + name + '!');
-
-      document.getElementById('user-step-email').style.display = 'block';
-
-      document.getElementById('user-step-name').style.display = 'none';
-
-      }
-
+  toast('🌸 Bem-vindo ao jardim, ' + name + '!');
+}
       function profLogin() {
 
-      clearModalErrors();
+  clearModalErrors();
 
-      const email = document.getElementById('prof-email-input').value.trim().toLowerCase();
+  const name = document.getElementById('prof-name-input').value.trim();
+  const pass = document.getElementById('prof-pass-input').value;
 
-      const pass = document.getElementById('prof-pass-input').value;
+  if (!name) {
+    showError('prof-err', 'Digite como deseja ser chamado.');
+    return;
+  }
 
-      if (!isValidEmail(email)) {
+  if (pass !== 'JARDIM2015') {
+    showError('prof-err', 'Senha incorreta.');
+    return;
+  }
 
-      showError('prof-err', 'Insira um Gmail válido.');
+  currentUser = {
+    name,
+    role: 'prof'
+  };
 
-      return;}
+  saveSession(currentUser);
 
-      if (pass !== PROF_PASS) {
+  closeModal('modal-prof');
 
-      showError('prof-err', 'Senha incorreta. Tente novamente.');
+  enterApp();
 
-      return;}
-
-      const users = getUsers();
-
-      const name = users[email] ? users[email].name : 'Professor';
-
-      if (!users[email]) {
-
-      users[email] = { name: 'Professor', registeredAt: Date.now(), role: 'prof' };
-
-      setUsers(users);}
-
-      currentUser = { email, name, role: 'prof' };
-
-      saveSession(currentUser);
-
-      closeModal('modal-prof');
-
-      enterApp();
-
-      toast('🔑 Bem-vindo, Professor!', 'gold');
-
-      }
+  toast('🔑 Bem-vindo, Professor ' + name + '!', 'gold');
+}
 
       function enterApp() {
 
